@@ -1,0 +1,23 @@
+<!--?xml version=1.0 encoding=utf-8?-->
+<Relativelayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:id="@+id/title_bar"
+	    android:background="@drawable/title_bar" 
+	    android:layout_height="45dp" 
+	    android:layout_width="match_parent" >
+	    <TextView
+	        android:id="@+id/call_phone"
+	        android:layout_centerVertical="true" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20dp" 
+	        android:layout_width="wrap_content" 
+	        android:text="打电话"
+	        />
+	    <ImageButton
+	        android:background="@drawable/top_add" 
+	        android:id="@+id/top_add" 
+	        android:layout_alignParentRight="true" 
+	        android:layout_centerVertical="true" 
+	        android:layout_height="wrap_content" 
+	        android:layout_width="wrap_content"
+	     />
+</Relativelayout>

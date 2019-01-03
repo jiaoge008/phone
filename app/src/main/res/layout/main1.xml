@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+	
+    <RelativeLayout 
+    android:id="@+id/title_bar"
+    android:background="@drawable/title_bar"
+    android:layout_height="45dp" 
+    android:layout_width="match_parent"
+    
+    >
+    
+    	<TextView
+	        android:id="@+id/call_phone"
+	        android:layout_centerVertical="true" 
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="20dp" 
+	        android:layout_width="wrap_content" 
+	        android:text="打电话"
+	        />
+    	<ImageButton
+	        android:background="@drawable/top_add" 
+	        android:id="@+id/top_add" 
+	        android:layout_alignParentRight="true" 
+	        android:layout_centerVertical="true" 
+	        android:layout_height="wrap_content" 
+	        android:layout_width="wrap_content"
+	     />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" 
+        android:layout_below="@+id/title_bar">
+
+        <EditText
+            android:id="@+id/et1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:phoneNumber="true" 
+            />
+
+        <Button
+            android:id="@+id/bt1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Call Phone" 
+            />
+        <ScrollView 
+			android:id="@+id/sv"
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content"
+			>
+			<!--这里是你自己要加的内容，只要内容大于一屏，就会滚动-->
+			<LinearLayout
+			    android:id="@+id/ll"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:orientation="vertical" 
+		      >
+		        <ImageButton 
+					android:id="@+id/jiangjiang" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:src="@drawable/jiangjiang" 
+				/>
+	        	<ImageButton 
+					android:id="@+id/dujun" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:scaleType="fitXY"
+					android:src="@drawable/dujun" 
+				/>
+	        	<ImageButton 
+					android:id="@+id/bingbing" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:scaleType="fitXY"
+					android:src="@drawable/bingbing" 
+				/>
+	        	<ImageButton 
+					android:id="@+id/dagu" 
+					android:layout_width="wrap_content" 
+					android:layout_height="wrap_content" 
+					android:scaleType="fitXY"
+					android:src="@drawable/dagu" 
+				/>
+	        </LinearLayout>
+		</ScrollView>
+    </LinearLayout>
+
+</RelativeLayout>

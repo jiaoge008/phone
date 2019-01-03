@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_new_phone"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <ImageButton 
+		android:id="@+id/add_head_image" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:src="@drawable/no_head"
+		/>
+    <EditText
+        android:id="@+id/phone_num"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:height="10mm"
+        android:textSize="30sp"
+        android:phoneNumber="true" 
+        />
+    <Button
+        android:id="@+id/add_person"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:height="10mm"
+        android:textSize="30sp"
+        android:text="确定添加联系人" 
+        />
+</LinearLayout>
