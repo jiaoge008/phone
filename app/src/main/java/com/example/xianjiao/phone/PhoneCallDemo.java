@@ -1,16 +1,27 @@
 package com.example.xianjiao.phone;
 
 import java.io.File;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.example.phonecalldemo.R;
 import com.example.xianjiao.phone.FileOperate;
+
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -35,7 +46,7 @@ import android.util.Log;
 import android.view.View.*;
 import android.view.*;
 
-public class PhoneCallDemo extends Activity implements OnClickListener,OnLongClickListener{
+public class PhoneCallDemo extends Activity implements OnClickListener, OnLongClickListener {
 
     private Button bt;
     private EditText et;
@@ -51,15 +62,16 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
     private Integer deleteImageButtonId;
     private String deletePhoneNum;
 
-    private HashMap<Integer,String> map;
+    private HashMap<Integer, String> map;
 
     private int increaseNum = 1;
 
     private final static String projectName = "dadianhua";
-    private final static String phoneCallProjectPath = Environment.getExternalStorageDirectory()+File.separator+projectName+File.separator;
-    private final static String imagePath = phoneCallProjectPath+"images"+File.separator;
-    private final static String imageFilePath = imagePath+"myPic.png";
-    private final static String phoneBookFilePath = phoneCallProjectPath+"dianhuaben.txt";
+    private final static String phoneCallProjectPath = Environment.getExternalStorageDirectory() + File.separator + projectName + File.separator;
+    private final static String imagePath = phoneCallProjectPath + "images" + File.separator;
+    private final static String imageFilePath = imagePath + "myPic.png";
+    private final static String phoneBookFilePath = phoneCallProjectPath + "dianhuaben.txt";
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -73,7 +85,7 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
         map = FileOperate.ReadTxtFile(phoneBookFilePath);
         FileOperate.composeMapStr(map);
 
-        linerLayout = (LinearLayout)findViewById(R.id.ll);
+        linerLayout = (LinearLayout) findViewById(R.id.ll);
 
 
         ImageButton last = new ImageButton(this);
@@ -81,35 +93,33 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         //取得资源
-        bt = (Button)findViewById(R.id.bt1);
-        et = (EditText)findViewById(R.id.et1);
-        topAdd = (ImageButton)findViewById(R.id.top_add);
+        bt = (Button) findViewById(R.id.bt1);
+        et = (EditText) findViewById(R.id.et1);
+        topAdd = (ImageButton) findViewById(R.id.top_add);
         bt.setVisibility(View.GONE);
         et.setVisibility(View.GONE);
-        jiangjiang = (ImageButton)findViewById(R.id.jiangjiang);
+        jiangjiang = (ImageButton) findViewById(R.id.jiangjiang);
         jiangjiang.setVisibility(View.GONE);
-        dujun = (ImageButton)findViewById(R.id.dujun);
+        dujun = (ImageButton) findViewById(R.id.dujun);
         dujun.setVisibility(View.GONE);
-        bingbing = (ImageButton)findViewById(R.id.bingbing);
+        bingbing = (ImageButton) findViewById(R.id.bingbing);
         bingbing.setVisibility(View.GONE);
-        dagu = (ImageButton)findViewById(R.id.dagu);
+        dagu = (ImageButton) findViewById(R.id.dagu);
         dagu.setVisibility(View.GONE);
         imagebtn_params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        imagebtn_params.height = dm.heightPixels/2;
+        imagebtn_params.height = dm.heightPixels / 2;
         imagebtn_params.width = dm.widthPixels;
         dujun.setLayoutParams(imagebtn_params);
         bingbing.setLayoutParams(imagebtn_params);
         dagu.setLayoutParams(imagebtn_params);
         //通过遍历button动态创建ImageButton
         Iterator iter = map.keySet().iterator();
-        while (iter.hasNext())
-        {
+        while (iter.hasNext()) {
             Object key = iter.next();
             Object val = map.get(key);
-            Integer integerKey = (Integer)key;
-            if(integerKey > increaseNum)
-            {
+            Integer integerKey = (Integer) key;
+            if (integerKey > increaseNum) {
                 increaseNum = integerKey;
             }
             ImageButton addImageButton = new ImageButton(this);
@@ -119,23 +129,23 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
             addImageButton.setOnClickListener(this);
             //设置长按时间函数
             addImageButton.setOnLongClickListener(this);
-            String imageFilePath = imagePath+(String)val+".png";
-            Log.e("startActivity:",(String)val);
+            String imageFilePath = imagePath + (String) val + ".png";
+            Log.e("startActivity:", (String) val);
             File tmpImageFile = new File(imageFilePath);
             Bitmap photo;
-            try{
+            try {
                 FileInputStream in = new FileInputStream(tmpImageFile);
-                try{
+                try {
                     photo = BitmapFactory.decodeStream(in);
                     Drawable drawable = new BitmapDrawable(photo);
                     addImageButton.setImageDrawable(drawable);
                     linerLayout.addView(addImageButton);
                     in.close();
-                }catch (IOException e){
+                } catch (IOException e) {
 
                 }
 
-            }catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
 
             }
 
@@ -149,18 +159,18 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
         last.setOnClickListener(this);
         //topAdd.setOnClickListener(this);
         linerLayout.addView(last);
-        topAdd.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
+        topAdd.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
 
                 Intent intent = new Intent();
                 intent.setClass(PhoneCallDemo.this, AddNewPhone.class);
                 //启动
                 //startActivity(intent);
-                startActivityForResult(intent,1000);
+                startActivityForResult(intent, 1000);
             }
         });
-        dagu.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
+        dagu.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
                 String daguPhomeNum = "13280533817";
                 Intent phoneIntent = new Intent("android.intent.action.CALL",
                         Uri.parse("tel:" + daguPhomeNum));
@@ -168,8 +178,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 startActivity(phoneIntent);
             }
         });
-        bingbing.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
+        bingbing.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
                 String bingBingPhoneNum = "13854975246";
                 Intent phoneIntent = new Intent("android.intent.action.CALL",
                         Uri.parse("tel:" + bingBingPhoneNum));
@@ -177,8 +187,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 startActivity(phoneIntent);
             }
         });
-        dujun.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
+        dujun.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
                 String dujunPhoneNum = "13505605306";
                 Intent phoneIntent = new Intent("android.intent.action.CALL",
                         Uri.parse("tel:" + dujunPhoneNum));
@@ -186,8 +196,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 startActivity(phoneIntent);
             }
         });
-        jiangjiang.setOnClickListener(new ImageButton.OnClickListener(){
-            public void onClick(View v){
+        jiangjiang.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
                 String jiangJiangPhoneNum = "18698868895";
                 Intent phoneIntent = new Intent("android.intent.action.CALL",
                         Uri.parse("tel:" + jiangJiangPhoneNum));
@@ -195,32 +205,83 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 startActivity(phoneIntent);
             }
         });
+        //申请权限
+        applyPermission();
         //增加事件响应
-
-        bt.setOnClickListener(new Button.OnClickListener(){
+        bt.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 //取得输入的电话号码串
                 String inputStr = et.getText().toString();
                 //如果输入不为空创建打电话的Intent
-                if(inputStr.trim().length()!=0)
-                {
+                if (inputStr.trim().length() != 0) {
                     Intent phoneIntent = new Intent("android.intent.action.CALL",
                             Uri.parse("tel:" + inputStr));
                     //启动
                     startActivity(phoneIntent);
                 }
                 //否则Toast提示一下
-                else{
+                else {
                     Toast.makeText(PhoneCallDemo.this, "不能输入为空", Toast.LENGTH_LONG).show();
                 }
             }
 
         });
     }
-    public boolean onLongClick(View v)
-    {
+
+    /**
+     * 申请权限
+     */
+    private static final int REQUESTCODE = 1001;
+
+    public void applyPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            List<String> permissionList = new ArrayList<>();
+            int callPhonePermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.CALL_PHONE);
+            if (callPhonePermission != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(Manifest.permission.CALL_PHONE);
+            }
+            int writeStoragePermission = ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (writeStoragePermission != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            if (permissionList.size() != 0) {
+                //说明需要申请权限
+                String[] permissionStrArr = permissionList.toArray(new String[0]);
+                ActivityCompat.requestPermissions(this, permissionStrArr, REQUESTCODE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        //当用户点击了窗口中的按钮那么就会回调此方法
+        if (requestCode == REQUESTCODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //如果执行到了这里，那么用户同意开启了申请的权限，grantResults的长度不为0
+            } else {
+                // 用户拒绝开启权限，在这里可以给用户提示，开启此权限才能正常的使用app的功能，点击确定后跳到应用信息界面去手动开启权限
+                new AlertDialog.Builder(this).setTitle("是否开启权限").setMessage("需要这个权限新网去开启，是否现在去？").setNegativeButton("就不要", null)
+                        .setPositiveButton("要要要", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent i = new Intent();
+                                i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                i.setData(uri);
+                                startActivity(i);
+                            }
+                        }).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public boolean onLongClick(View v) {
         Integer imageButtoId = v.getId();
         deleteImageButtonId = imageButtoId;
         String phoneNum = map.get(imageButtoId);
@@ -233,9 +294,9 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
 
                         Intent intent = new Intent();
 
-                        intent.putExtra("editPhoneNum",map.get(deleteImageButtonId));
+                        intent.putExtra("editPhoneNum", map.get(deleteImageButtonId));
                         intent.putExtra("editId", deleteImageButtonId);
-                        intent.setClass(PhoneCallDemo.this,DeletePhone.class);
+                        intent.setClass(PhoneCallDemo.this, DeletePhone.class);
 
                         startActivityForResult(intent, 1001);
 
@@ -244,12 +305,12 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 .setPositiveButton("删除", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
-                        ImageButton delImageButton = (ImageButton)findViewById((int)deleteImageButtonId);
+                        ImageButton delImageButton = (ImageButton) findViewById((int) deleteImageButtonId);
 
                         map.remove(deleteImageButtonId);
                         String coverStr = FileOperate.composeMapStr(map);
                         FileOperate.WriteFileCover(phoneBookFilePath, coverStr);
-                        String tmpImageFilePath = imagePath+deletePhoneNum+".png";
+                        String tmpImageFilePath = imagePath + deletePhoneNum + ".png";
                         File tmpImageFile = new File(tmpImageFilePath);
                         tmpImageFile.delete();
                         linerLayout.removeView(delImageButton);
@@ -257,14 +318,15 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
                 }).show();
         return true;
     }
-    public void onClick(View v){
+
+    public void onClick(View v) {
         Integer imageButtoId = v.getId();
         String phoneNum = map.get(imageButtoId);
         Intent phoneIntent = new Intent("android.intent.action.CALL",
                 Uri.parse("tel:" + phoneNum));
         startActivity(phoneIntent);
 
-        switch(v.getId()){
+        switch (v.getId()) {
 	    	/*
 	    			case 100:
 	            	   String changjianPhoneNum = "18698868895";
@@ -277,10 +339,12 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
             case R.id.top_add:
                 ShowPickDialog();
                 break;
-            default:;
+            default:
+                ;
         }
 
     }
+
     /**
      * 选择提示对话框
      */
@@ -335,27 +399,26 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
-        Log.e("num:","haaaaaaaaaaaaaaaaaaa");
+        Log.e("num:", "haaaaaaaaaaaaaaaaaaa");
         //添加联系人的操作返回处理
-        if(requestCode == 1000 && resultCode == 1001)
-        {
+        if (requestCode == 1000 && resultCode == 1001) {
             String phoneNum = data.getStringExtra("phoneNum");
             //Log.e("num:",phoneNum);
             Bitmap photo = data.getParcelableExtra("bitPhoto");
 
-            String imageFilePath = imagePath+phoneNum+".png";
+            String imageFilePath = imagePath + phoneNum + ".png";
             File tmpImageFile = new File(imageFilePath);
-            try{
+            try {
                 FileOutputStream out = new FileOutputStream(tmpImageFile);
                 photo.compress(Bitmap.CompressFormat.PNG, 60, out);
-                try{
+                try {
                     out.flush();
                     out.close();
-                }catch (IOException e){
+                } catch (IOException e) {
 
                 }
 
-            }catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
 
             }
             Drawable drawable = new BitmapDrawable(photo);
@@ -368,11 +431,10 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
             addImageButton.setImageDrawable(drawable);
             addImageButton.setOnClickListener(this);
             linerLayout.addView(addImageButton);
-            FileOperate.WriteFileAppend(phoneBookFilePath,phoneNum+"\n");
+            FileOperate.WriteFileAppend(phoneBookFilePath, phoneNum + "\n");
         }
         //修改联系人的添加处理
-        if(requestCode == 1001 && resultCode == 1001)
-        {
+        if (requestCode == 1001 && resultCode == 1001) {
             String phoneNum = data.getStringExtra("phoneNum");
             Bitmap photo = data.getParcelableExtra("bitPhoto");
             int editId = data.getIntExtra("editId", 0);
@@ -380,50 +442,48 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
 
             boolean changedHeadImage = data.getBooleanExtra("changedHeadImage", false);
             boolean changedPhoneNum = data.getBooleanExtra("changedPhoneNum", false);
-            if(changedHeadImage == true)
-            {
-                String imageFilePath = imagePath+phoneNum+".png";
-                Log.e("phoneNum:",imageFilePath);
+            if (changedHeadImage == true) {
+                String imageFilePath = imagePath + phoneNum + ".png";
+                Log.e("phoneNum:", imageFilePath);
                 File tmpImageFile = new File(imageFilePath);
-                try{
+                try {
                     FileOutputStream out = new FileOutputStream(tmpImageFile);
                     photo.compress(Bitmap.CompressFormat.PNG, 60, out);
-                    try{
+                    try {
                         out.flush();
                         out.close();
-                    }catch (IOException e){
+                    } catch (IOException e) {
 
                     }
 
-                }catch (FileNotFoundException e){
+                } catch (FileNotFoundException e) {
 
                 }
                 Drawable drawable = new BitmapDrawable(photo);
-                ImageButton editImageButton = (ImageButton)findViewById(editId);
+                ImageButton editImageButton = (ImageButton) findViewById(editId);
                 editImageButton.setImageDrawable(drawable);
             }
-            if(changedPhoneNum == true)
-            {
-                map.put(editId,phoneNum);
+            if (changedPhoneNum == true) {
+                map.put(editId, phoneNum);
                 String coverStr = FileOperate.composeMapStr(map);
                 FileOperate.WriteFileCover(phoneBookFilePath, coverStr);
 
-                String imageFilePath = imagePath+phoneNum+".png";
+                String imageFilePath = imagePath + phoneNum + ".png";
                 File tmpImageFile = new File(imageFilePath);
-                try{
+                try {
                     FileOutputStream out = new FileOutputStream(tmpImageFile);
                     photo.compress(Bitmap.CompressFormat.PNG, 60, out);
-                    try{
+                    try {
                         out.flush();
                         out.close();
-                    }catch (IOException e){
+                    } catch (IOException e) {
 
                     }
 
-                }catch (FileNotFoundException e){
+                } catch (FileNotFoundException e) {
 
                 }
-                String deleteFilePath = imagePath+rawPhoneNum+".png";
+                String deleteFilePath = imagePath + rawPhoneNum + ".png";
                 File deleteFile = new File(deleteFilePath);
                 deleteFile.delete();
             }
@@ -432,6 +492,7 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
 
     /**
      * 裁剪图片方法实现
+     *
      * @param uri
      */
     public void startPhotoZoom(Uri uri) {
@@ -455,8 +516,10 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
         intent.putExtra("return-data", true);
         startActivityForResult(intent, 3);
     }
+
     /**
      * 保存裁剪之后的图片数据
+     *
      * @param picdata
      */
     private void setPicToView(Intent picdata) {
@@ -465,17 +528,17 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
             Bitmap photo = extras.getParcelable("data");
             //将Bitmap保存为png图片
             File tmpImageFile = new File(imageFilePath);
-            try{
+            try {
                 FileOutputStream out = new FileOutputStream(tmpImageFile);
                 photo.compress(Bitmap.CompressFormat.PNG, 60, out);
-                try{
+                try {
                     out.flush();
                     out.close();
-                }catch (IOException e){
+                } catch (IOException e) {
 
                 }
 
-            }catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
 
             }
 
@@ -509,21 +572,22 @@ public class PhoneCallDemo extends Activity implements OnClickListener,OnLongCli
             //iv.setBackgroundDrawable(drawable);
         }
     }
-    private void makeProjectPath()
-    {
-        File dirFirstFile=new File(phoneCallProjectPath);//新建一级主目录
-        if(!dirFirstFile.exists()){//判断文件夹目录是否存在
+
+    private void makeProjectPath() {
+        File dirFirstFile = new File(phoneCallProjectPath);//新建一级主目录
+        if (!dirFirstFile.exists()) {//判断文件夹目录是否存在
             dirFirstFile.mkdir();//如果不存在则创建
         }
-        File dirSecondFile=new File(imagePath);//新建二级主目录
-        if(!dirSecondFile.exists()){//判断文件夹目录是否存在
+        File dirSecondFile = new File(imagePath);//新建二级主目录
+        if (!dirSecondFile.exists()) {//判断文件夹目录是否存在
             dirSecondFile.mkdir();//如果不存在则创建
         }
     }
 }
-class StartClick implements OnClickListener{
-    public void onClick(View v){
-        switch(v.getId()){
+
+class StartClick implements OnClickListener {
+    public void onClick(View v) {
+        switch (v.getId()) {
             case 100:
                 String changjianPhoneNum = "18698868895";
                 Intent phoneIntent = new Intent("android.intent.action.CALL",
@@ -531,7 +595,8 @@ class StartClick implements OnClickListener{
                 //启动
                 //startActivity(phoneIntent);
                 break;
-            default:;
+            default:
+                ;
 
         }
     }
