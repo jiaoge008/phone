@@ -49,6 +49,7 @@ import android.view.*;
 public class PhoneCallDemo extends Activity implements OnClickListener, OnLongClickListener {
 
     private Button bt;
+    private Button fabAdd;
     private EditText et;
     private DisplayMetrics dm;
     private LinearLayout.LayoutParams imagebtn_params;
@@ -96,6 +97,7 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
         bt = (Button) findViewById(R.id.bt1);
         et = (EditText) findViewById(R.id.et1);
         topAdd = (ImageButton) findViewById(R.id.top_add);
+        fabAdd = (Button) findViewById(R.id.fab_add);
         bt.setVisibility(View.GONE);
         et.setVisibility(View.GONE);
         jiangjiang = (ImageButton) findViewById(R.id.jiangjiang);
@@ -166,6 +168,15 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
                 intent.setClass(PhoneCallDemo.this, AddNewPhone.class);
                 //启动
                 //startActivity(intent);
+                startActivityForResult(intent, 1000);
+            }
+        });
+        fabAdd.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent intent = new Intent();
+                intent.setClass(PhoneCallDemo.this, AddNewPhone.class);
+                //启动
                 startActivityForResult(intent, 1000);
             }
         });
