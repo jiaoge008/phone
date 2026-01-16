@@ -29,11 +29,51 @@
 	        android:layout_width="wrap_content"
 	     />
     </RelativeLayout>
+    
+    <!-- 底部导航栏 -->
+    <LinearLayout
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#F5F5F5"
+        android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/btn_contacts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="通讯录"
+            android:textColor="#4CAF50"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            />
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#E0E0E0"
+            />
+        
+        <Button
+            android:id="@+id/btn_my"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="我的"
+            android:textColor="#9E9E9E"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            />
+    </LinearLayout>
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" 
-        android:layout_below="@+id/title_bar">
+        android:layout_below="@+id/title_bar"
+        android:layout_above="@+id/bottom_nav">
 
         <EditText
             android:id="@+id/et1"
@@ -98,7 +138,8 @@
         android:layout_height="54dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="20dp"
+        android:layout_marginBottom="70dp"
+        android:layout_marginRight="20dp"
         android:text="+"
         android:textSize="27sp"
         android:textColor="#FFFFFF"

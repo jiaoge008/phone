@@ -50,6 +50,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
 
     private Button bt;
     private Button fabAdd;
+    private Button btnContacts;
+    private Button btnMy;
     private EditText et;
     private DisplayMetrics dm;
     private LinearLayout.LayoutParams imagebtn_params;
@@ -98,6 +100,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
         et = (EditText) findViewById(R.id.et1);
         topAdd = (ImageButton) findViewById(R.id.top_add);
         fabAdd = (Button) findViewById(R.id.fab_add);
+        btnContacts = (Button) findViewById(R.id.btn_contacts);
+        btnMy = (Button) findViewById(R.id.btn_my);
         bt.setVisibility(View.GONE);
         et.setVisibility(View.GONE);
         jiangjiang = (ImageButton) findViewById(R.id.jiangjiang);
@@ -180,6 +184,8 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
                 startActivityForResult(intent, 1000);
             }
         });
+        btnContacts.setOnClickListener(this);
+        btnMy.setOnClickListener(this);
         dagu.setOnClickListener(new ImageButton.OnClickListener() {
             public void onClick(View v) {
                 String daguPhomeNum = "13280533817";
@@ -331,27 +337,29 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
     }
 
     public void onClick(View v) {
-        Integer imageButtoId = v.getId();
-        String phoneNum = map.get(imageButtoId);
-        Intent phoneIntent = new Intent("android.intent.action.CALL",
-                Uri.parse("tel:" + phoneNum));
-        startActivity(phoneIntent);
-
         switch (v.getId()) {
-	    	/*
-	    			case 100:
-	            	   String changjianPhoneNum = "18698868895";
-		        		Intent phoneIntent = new Intent("android.intent.action.CALL",
-		     			       Uri.parse("tel:" + changjianPhoneNum));
-		        		//启动
-		        		startActivity(phoneIntent);
-	            	   break;
-	            	   */
+            case R.id.btn_contacts:
+                // 已经在通讯录页面，无需跳转
+                break;
+            case R.id.btn_my:
+                // 跳转到登录页面
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                startActivity(loginIntent);
+                finish();
+                break;
             case R.id.top_add:
                 ShowPickDialog();
                 break;
             default:
-                ;
+                // 处理联系人点击事件
+                Integer imageButtoId = v.getId();
+                String phoneNum = map.get(imageButtoId);
+                if (phoneNum != null) {
+                    Intent phoneIntent = new Intent("android.intent.action.CALL",
+                            Uri.parse("tel:" + phoneNum));
+                    startActivity(phoneIntent);
+                }
+                break;
         }
 
     }

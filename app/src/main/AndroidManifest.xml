@@ -40,6 +40,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.xianjiao.phone.LoginActivity"
+            android:label="我的" >
+            <intent-filter>
+                <action android:name="android.intent.action.login" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         
         <!-- 添加FileProvider配置 -->
         <provider
