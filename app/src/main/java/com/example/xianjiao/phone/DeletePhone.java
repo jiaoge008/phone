@@ -26,6 +26,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.DisplayMetrics;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.phonecalldemo.R;
 
@@ -183,10 +192,12 @@ public class DeletePhone extends Activity implements OnClickListener{
                         Intent intent = new Intent(
                                 MediaStore.ACTION_IMAGE_CAPTURE);
                         //下面这句指定调用相机拍照后的照片存储的路径
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri
-                                .fromFile(new File(Environment
-                                        .getExternalStorageDirectory(),
-                                        "xiaoma.jpg")));
+                        File tempFile = new File(Environment.getExternalStorageDirectory(), "xiaoma.jpg");
+                        Uri photoUri = FileProvider.getUriForFile(DeletePhone.this, "com.example.phonecalldemo.fileprovider", tempFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                        // 添加权限
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         startActivityForResult(intent, 2);
                     }
                 }).show();
@@ -200,9 +211,18 @@ public class DeletePhone extends Activity implements OnClickListener{
                 break;
             // 如果是调用相机拍照时
             case 2:
+                // 首先检查文件是否存在
                 File temp = new File(Environment.getExternalStorageDirectory()
                         + "/xiaoma.jpg");
-                startPhotoZoom(Uri.fromFile(temp));
+                if (temp.exists()) {
+                    // 使用FileProvider生成URI
+                    Uri photoUri = FileProvider.getUriForFile(DeletePhone.this, "com.example.phonecalldemo.fileprovider", temp);
+                    startPhotoZoom(photoUri);
+                } else {
+                    // 如果文件不存在，显示错误提示
+                    Toast.makeText(DeletePhone.this, "拍照失败，请重试", Toast.LENGTH_LONG).show();
+                    System.out.println("拍照文件不存在：" + temp.getPath());
+                }
                 break;
             // 取得裁剪后的图片
             case 3:
@@ -231,6 +251,11 @@ public class DeletePhone extends Activity implements OnClickListener{
     public void startPhotoZoom(Uri uri) {
 
         Intent intent = new Intent("com.android.camera.action.CROP");
+        
+        // 为Intent添加权限
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        
         intent.setDataAndType(uri, "image/*");
         //下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", "true");
@@ -241,6 +266,12 @@ public class DeletePhone extends Activity implements OnClickListener{
         intent.putExtra("outputX", 150);
         intent.putExtra("outputY", 150);
         intent.putExtra("return-data", true);
+        
+        // 使用FileProvider生成URI
+        File outputFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        Uri uritempFile = FileProvider.getUriForFile(this, "com.example.phonecalldemo.fileprovider", outputFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
+        
         startActivityForResult(intent, 3);
     }
     /**
@@ -260,6 +291,23 @@ public class DeletePhone extends Activity implements OnClickListener{
             deleteHeadImageButton.setLayoutParams(imagebtn_params);
             deleteHeadImageButton.setImageDrawable(drawable);
             //addHeadImage.setBackground(drawable);
+        } else {
+            //如果extras 为空的话，说明走的是外部存储
+            File tempFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+
+            try {
+                FileInputStream inputStream = new FileInputStream(tempFile);
+                Bitmap photo = BitmapFactory.decodeStream(inputStream);
+                backPicMap = photo;
+                changedHeadImage = true;
+                Drawable drawable = new BitmapDrawable(photo);
+                deleteHeadImageButton = (ImageButton)findViewById(R.id.delete_head_image);
+                deleteHeadImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
+                deleteHeadImageButton.setLayoutParams(imagebtn_params);
+                deleteHeadImageButton.setImageDrawable(drawable);
+            } catch (Exception e) {
+                System.out.println("FileOutputStream error:" + e);
+            }
         }
     }
 }

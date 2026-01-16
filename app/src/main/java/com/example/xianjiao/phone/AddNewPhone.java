@@ -35,6 +35,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.DisplayMetrics;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.phonecalldemo.R;
 
@@ -190,10 +199,12 @@ public class AddNewPhone extends Activity implements OnClickListener {
                         Intent intent = new Intent(
                                 MediaStore.ACTION_IMAGE_CAPTURE);
                         //下面这句指定调用相机拍照后的照片存储的路径
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri
-                                .fromFile(new File(Environment
-                                        .getExternalStorageDirectory(),
-                                        "xiaoma.jpg")));
+                        File tempFile = new File(Environment.getExternalStorageDirectory(), "xiaoma.jpg");
+                        Uri photoUri = FileProvider.getUriForFile(AddNewPhone.this, "com.example.phonecalldemo.fileprovider", tempFile);
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                        // 添加权限
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         startActivityForResult(intent, 2);
                     }
                 }).show();
@@ -209,9 +220,18 @@ public class AddNewPhone extends Activity implements OnClickListener {
                 break;
             // 如果是调用相机拍照时
             case 2:
+                // 首先检查文件是否存在
                 File temp = new File(Environment.getExternalStorageDirectory()
                         + "/xiaoma.jpg");
-                startPhotoZoom(Uri.fromFile(temp));
+                if (temp.exists()) {
+                    // 使用FileProvider生成URI
+                    Uri photoUri = FileProvider.getUriForFile(AddNewPhone.this, "com.example.phonecalldemo.fileprovider", temp);
+                    startPhotoZoom(photoUri);
+                } else {
+                    // 如果文件不存在，显示错误提示
+                    Toast.makeText(AddNewPhone.this, "拍照失败，请重试", Toast.LENGTH_LONG).show();
+                    System.out.println("拍照文件不存在：" + temp.getPath());
+                }
                 break;
             // 取得裁剪后的图片
             case 3:
@@ -224,19 +244,29 @@ public class AddNewPhone extends Activity implements OnClickListener {
                  *
                  */
 
-                File smallTemp = new File("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
-                if (smallTemp.exists()) {
-                    System.out.println("samll haha : cunzai");
-                } else {
-                    System.out.println("small haha : bu cunzai");
-                }
-                Uri dataUri = Uri.fromFile(smallTemp);
-                data.setDataAndType(dataUri, "image/*");
-                System.out.println("dataUri path:" + dataUri.getPath());
+                // 首先检查data是否为null
                 if (data != null) {
                     setPicToView(data);
                 } else {
-                    System.out.println("数据为空");
+                    // 如果data为null，尝试从存储的路径加载图片
+                    File smallTemp = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+                    if (smallTemp.exists()) {
+                        try {
+                            FileInputStream inputStream = new FileInputStream(smallTemp);
+                            Bitmap photo = BitmapFactory.decodeStream(inputStream);
+                            backPicMap = photo;
+                            Drawable drawable = new BitmapDrawable(photo);
+                            ImageButton addHeadImage = (ImageButton) findViewById(R.id.add_head_image);
+                            addHeadImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                            addHeadImage.setLayoutParams(imagebtn_params);
+                            addHeadImage.setImageDrawable(drawable);
+                            inputStream.close();
+                        } catch (Exception e) {
+                            System.out.println("FileInputStream error:" + e);
+                        }
+                    } else {
+                        System.out.println("small.jpg 文件不存在");
+                    }
                 }
                 break;
             default:
@@ -260,16 +290,12 @@ public class AddNewPhone extends Activity implements OnClickListener {
          * 制做的了...吼吼
          */
         Intent intent = new Intent("com.android.camera.action.CROP");
-        //intent.putExtra("return-data", false);
-//        File temp = new File("/storage/emulated/0/DCIM/Camera/IMG_20181224_123657.jpg");
-//        if (temp.exists()) {
-//            System.out.println("tem cunzai");
-//        } else {
-//            System.out.println("tem bu cunzai");
-//        }
-//        System.out.println("uri path:" + uri.getPath());
-//        System.out.println("uri1111:" + uri.toString());
-//        uri = Uri.fromFile(temp);
+        
+        // 为Intent添加权限
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        
+        // 设置数据和类型
         intent.setDataAndType(uri, "image/*");
         //下面这个crop=true是设置在开启的Intent中设置显示的VIEW可裁剪
         intent.putExtra("crop", true);
@@ -282,7 +308,8 @@ public class AddNewPhone extends Activity implements OnClickListener {
         intent.putExtra("return-data", true);
 
         //uritempFile为Uri类变量，实例化uritempFile
-        Uri uritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        File outputFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        Uri uritempFile = FileProvider.getUriForFile(this, "com.example.phonecalldemo.fileprovider", outputFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         startActivityForResult(intent, 3);
