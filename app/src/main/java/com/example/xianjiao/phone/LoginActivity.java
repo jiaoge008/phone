@@ -36,6 +36,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private Button btnContacts;
     private Button btnMy;
 
+    // 记录当前登录用户名，供回调使用
+    private String currentLoginAccount = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +84,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 finish();
                 break;
             case R.id.btn_my:
-                // 已经在"我的"页面，无需跳转
+                // 如果已登录，跳转到详情页；否则当前即为登录页
+                SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+                boolean isLoggedIn = prefs.getBoolean("is_logged_in", false);
+                if (isLoggedIn) {
+                    Intent detailIntent = new Intent(this, AccountDetailActivity.class);
+                    startActivity(detailIntent);
+                    finish();
+                }
                 break;
             default:
                 break;
@@ -101,6 +110,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             return;
         }
         
+        // 记录本次登录用户名
+        currentLoginAccount = account;
+
         // 禁用登录按钮，防止重复提交
         btnLogin.setEnabled(false);
         btnLogin.setText("登录中...");
@@ -168,13 +180,25 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             editor.apply();
                             
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                            // 可以在这里跳转到主页面
+                            // 跳转到详情页
+                            Intent detailIntent = new Intent(LoginActivity.this, AccountDetailActivity.class);
+                            detailIntent.putExtra("username", username);
+                            startActivity(detailIntent);
+                            finish();
                         } else {
                             Log.w(TAG, "响应data不是JSONObject类型");
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                            Intent detailIntent = new Intent(LoginActivity.this, AccountDetailActivity.class);
+                            detailIntent.putExtra("username", currentLoginAccount);
+                            startActivity(detailIntent);
+                            finish();
                         }
                     } else {
                         Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        Intent detailIntent = new Intent(LoginActivity.this, AccountDetailActivity.class);
+                        detailIntent.putExtra("username", currentLoginAccount);
+                        startActivity(detailIntent);
+                        finish();
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "解析登录响应数据失败: " + e.getMessage(), e);

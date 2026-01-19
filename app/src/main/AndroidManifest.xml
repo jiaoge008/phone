@@ -55,6 +55,9 @@
         <activity
             android:name="com.example.xianjiao.phone.RegisterActivity"
             android:label="注册账号" />
+        <activity
+            android:name="com.example.xianjiao.phone.AccountDetailActivity"
+            android:label="账号详情" />
         
         <!-- 添加FileProvider配置 -->
         <provider

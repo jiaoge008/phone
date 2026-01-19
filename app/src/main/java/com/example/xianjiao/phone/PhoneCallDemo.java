@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -342,9 +343,16 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
                 // 已经在通讯录页面，无需跳转
                 break;
             case R.id.btn_my:
-                // 跳转到登录页面
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                startActivity(loginIntent);
+                // 根据登录状态跳转：已登录 -> 详情页；未登录 -> 登录页
+                SharedPreferences prefs = getSharedPreferences("login_prefs", MODE_PRIVATE);
+                boolean isLoggedIn = prefs.getBoolean("is_logged_in", false);
+                if (isLoggedIn) {
+                    Intent detailIntent = new Intent(this, AccountDetailActivity.class);
+                    startActivity(detailIntent);
+                } else {
+                    Intent loginIntent = new Intent(this, LoginActivity.class);
+                    startActivity(loginIntent);
+                }
                 finish();
                 break;
             case R.id.top_add:
