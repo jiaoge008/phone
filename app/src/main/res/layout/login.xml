@@ -41,7 +41,21 @@
             android:text="登录"
             android:textColor="#FFFFFF"
             android:background="#4CAF50"
-            android:padding="10dp"
+            android:padding="15dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="15dp"
+            />
+        
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="注册账号"
+            android:textColor="#4CAF50"
+            android:background="@android:color/transparent"
+            android:padding="12dp"
+            android:textSize="15sp"
+            android:layout_marginTop="5dp"
             />
     </LinearLayout>
     

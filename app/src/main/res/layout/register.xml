@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <!-- 标题栏 -->
+    <LinearLayout
+        android:id="@+id/title_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="#F5F5F5"
+        android:gravity="center_vertical">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="注册账号"
+            android:textSize="20sp"
+            android:textColor="#333333"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 注册表单 -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title_bar"
+        android:layout_above="@id/bottom_nav"
+        android:fillViewport="true">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp" >
+            
+            <!-- 用户名输入框 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="用户名"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+                
+                <EditText
+                    android:id="@+id/et_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="请输入用户名"
+                    android:padding="15dp"
+                    android:background="#F5F5F5"
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:maxLength="20" />
+            </LinearLayout>
+            
+            <!-- 密码输入框 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="20dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="密码"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+                
+                <EditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="请输入密码（至少6位）"
+                    android:inputType="textPassword"
+                    android:padding="15dp"
+                    android:background="#F5F5F5"
+                    android:textSize="16sp"
+                    android:singleLine="true" />
+            </LinearLayout>
+            
+            <!-- 确认密码输入框 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="30dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="确认密码"
+                    android:textSize="14sp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="8dp" />
+                
+                <EditText
+                    android:id="@+id/et_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="请再次输入密码"
+                    android:inputType="textPassword"
+                    android:padding="15dp"
+                    android:background="#F5F5F5"
+                    android:textSize="16sp"
+                    android:singleLine="true" />
+            </LinearLayout>
+            
+            <!-- 注册按钮 -->
+            <Button
+                android:id="@+id/btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="注册"
+                android:textColor="#FFFFFF"
+                android:background="#4CAF50"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
+    
+    <!-- 底部导航栏 -->
+    <LinearLayout
+        android:id="@+id/bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#F5F5F5"
+        android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/btn_contacts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="通讯录"
+            android:textColor="#9E9E9E"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            />
+        
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#E0E0E0"
+            />
+        
+        <Button
+            android:id="@+id/btn_my"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="我的"
+            android:textColor="#9E9E9E"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            />
+    </LinearLayout>
+
+</RelativeLayout>
