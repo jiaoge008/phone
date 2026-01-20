@@ -9,7 +9,8 @@ public class ServerConfig {
     // 本地测试: "http://10.0.2.2:8080" (Android模拟器访问本机)
     // 局域网测试: "http://192.168.x.x:8080" (替换为实际IP)
     // 生产环境: "https://your-domain.com"
-    private static final String BASE_URL = "http://192.168.136.113:8080";
+//    private static final String BASE_URL = "http://192.168.136.113:8080";
+    private static final String BASE_URL = "https://notebook.baidudayu.com";
     
     /**
      * 获取服务器基础URL
