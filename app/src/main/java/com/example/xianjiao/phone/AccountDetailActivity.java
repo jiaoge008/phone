@@ -18,6 +18,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.example.phonecalldemo.R;
 import android.support.v4.app.ActivityCompat;
@@ -55,6 +56,8 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
     private Button btnLogout;
     private Button btnContacts;
     private Button btnMy;
+    private View loadingOverlay;
+    private TextView tvLoading;
 
     private static final int REQ_STORAGE = 2001;
     private static final int ACTION_NONE = 0;
@@ -74,6 +77,8 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
         btnLogout = findViewById(R.id.btn_logout);
         btnContacts = findViewById(R.id.btn_contacts);
         btnMy = findViewById(R.id.btn_my);
+        loadingOverlay = findViewById(R.id.loading_overlay);
+        tvLoading = findViewById(R.id.tv_loading);
 
         btnSync.setOnClickListener(this);
         btnBackup.setOnClickListener(this);
@@ -117,6 +122,21 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
                 break;
             default:
                 break;
+        }
+    }
+
+    private void showLoading(String text) {
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisibility(View.VISIBLE);
+        }
+        if (tvLoading != null && text != null) {
+            tvLoading.setText(text);
+        }
+    }
+
+    private void hideLoading() {
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisibility(View.GONE);
         }
     }
 
@@ -271,6 +291,12 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(AccountDetailActivity.this, result, Toast.LENGTH_LONG).show();
+            hideLoading();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showLoading("备份中...");
         }
     }
 
@@ -373,6 +399,12 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
                 startActivity(intent);
                 finish();
             }
+            hideLoading();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showLoading("同步中...");
         }
     }
 }

@@ -4,6 +4,40 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF" >
 
+    <!-- 同步/备份中的蒙版 -->
+    <RelativeLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:gravity="center">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyle"
+                android:indeterminate="true"/>
+
+            <TextView
+                android:id="@+id/tv_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:text="处理中..." />
+        </LinearLayout>
+    </RelativeLayout>
+
     <!-- 顶部账号信息和功能按钮区域 -->
     <ScrollView
         android:layout_width="match_parent"
