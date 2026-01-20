@@ -198,22 +198,27 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
                     return "本地通讯录为空，无需备份";
                 }
 
-                // 构建联系人列表
-                JSONArray contactsArray = new JSONArray();
+                int successCount = 0;
+                int failedCount = 0;
+                StringBuilder failMsgBuilder = new StringBuilder();
+
                 Iterator<Integer> it = map.keySet().iterator();
                 while (it.hasNext()) {
                     Integer key = it.next();
                     String phoneNum = map.get(key);
                     if (phoneNum == null) continue;
                     phoneNum = phoneNum.trim();
-                    if (phoneNum.length() == 0 || phoneNum.length() != 11) continue;
+                    if (phoneNum.length() == 0 || phoneNum.length() != 11) {
+                        failedCount++;
+                        continue;
+                    }
 
                     // 构造本地图片路径
                     File imageFile = new File(IMAGE_PATH + phoneNum + ".png");
                     String avatarBase64 = "";
                     if (imageFile.exists()) {
                         try {
-                            // 读取图片并转换为Base64
+                            // 读取图片并转换为Base64（每次单条发送，避免请求体过大）
                             Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
                             if (bitmap != null) {
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -224,44 +229,39 @@ public class AccountDetailActivity extends Activity implements View.OnClickListe
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "读取图片失败: " + phoneNum, e);
-                            // 图片读取失败，继续处理，avatarBase64为空
+                            // 图片读取失败，继续但记为失败
+                            failedCount++;
+                            failMsgBuilder.append(phoneNum).append(" 图片读取失败; ");
+                            continue;
                         }
                     }
 
-                    // 构建联系人项
+                    // 构建单条联系人请求
+                    JSONArray contactsArray = new JSONArray();
                     JSONObject contactItem = new JSONObject();
                     contactItem.put("phoneNumber", phoneNum);
                     contactItem.put("avatarBase64", avatarBase64);
                     contactsArray.put(contactItem);
+
+                    JSONObject backupRequest = new JSONObject();
+                    backupRequest.put("userId", userId);
+                    backupRequest.put("contacts", contactsArray);
+
+                    // 调用备份接口（单条发送，减小请求体）
+                    String resp = HttpUtils.postRequest("/api/appPhone/backupContacts", backupRequest.toString());
+                    HttpUtils.ApiResponse result = HttpUtils.parseResponse(resp);
+                    if (result == null || !result.isSuccess()) {
+                        failedCount++;
+                        failMsgBuilder.append(phoneNum).append(" 失败: ")
+                                .append(result != null ? result.message : "网络错误").append("; ");
+                        continue;
+                    }
+                    successCount++;
                 }
 
-                if (contactsArray.length() == 0) {
-                    return "没有有效的联系人可备份";
-                }
-
-                // 构建备份请求
-                JSONObject backupRequest = new JSONObject();
-                backupRequest.put("userId", userId);
-                backupRequest.put("contacts", contactsArray);
-
-                // 调用备份接口
-                String resp = HttpUtils.postRequest("/api/appPhone/backupContacts", backupRequest.toString());
-                HttpUtils.ApiResponse result = HttpUtils.parseResponse(resp);
-                if (result == null || !result.isSuccess()) {
-                    return "备份失败: " + (result != null ? result.message : "网络请求失败");
-                }
-
-                // 解析响应
-                if (result.data instanceof JSONObject) {
-                    JSONObject data = (JSONObject) result.data;
-                    int successCount = data.optInt("successCount", 0);
-                    int failedCount = data.optInt("failedCount", 0);
-                    String message = data.optString("message", "");
-                    return String.format("备份完成：成功 %d 条，失败 %d 条%s", 
-                            successCount, failedCount, message.isEmpty() ? "" : "\n" + message);
-                }
-
-                return result.message;
+                return String.format("备份完成：成功 %d 条，失败 %d 条%s",
+                        successCount, failedCount,
+                        failMsgBuilder.length() > 0 ? "\n" + failMsgBuilder.toString() : "");
             } catch (Exception e) {
                 Log.e(TAG, "备份失败", e);
                 return "备份失败: " + e.getMessage();
