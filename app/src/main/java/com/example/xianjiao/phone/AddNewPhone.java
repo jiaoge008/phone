@@ -9,8 +9,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -244,6 +246,10 @@ public class AddNewPhone extends Activity implements OnClickListener {
                  *
                  */
 
+                if (resultCode != RESULT_OK) {
+                    Toast.makeText(AddNewPhone.this, "已取消或裁剪失败", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 // 首先检查data是否为null
                 if (data != null) {
                     setPicToView(data);
@@ -309,9 +315,23 @@ public class AddNewPhone extends Activity implements OnClickListener {
 
         //uritempFile为Uri类变量，实例化uritempFile
         File outputFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        if (outputFile.exists()) {
+            outputFile.delete();
+        }
         Uri uritempFile = FileProvider.getUriForFile(this, "com.example.phonecalldemo.fileprovider", outputFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+
+        // 让 FLAG_GRANT_WRITE_URI_PERMISSION 也覆盖到 EXTRA_OUTPUT 里的 FileProvider URI
+        intent.setClipData(ClipData.newRawUri(MediaStore.EXTRA_OUTPUT, uritempFile));
+        // 兜底：对每一个能响应 crop Intent 的目标包显式授予读写权限
+        List<ResolveInfo> resolvedList = getPackageManager()
+                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo info : resolvedList) {
+            grantUriPermission(info.activityInfo.packageName, uritempFile,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+
         startActivityForResult(intent, 3);
     }
 
