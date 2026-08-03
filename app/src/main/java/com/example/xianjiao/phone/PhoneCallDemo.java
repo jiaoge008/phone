@@ -3,11 +3,14 @@ package com.example.xianjiao.phone;
 import java.io.File;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
 import com.example.phonecalldemo.R;
@@ -541,6 +544,27 @@ public class PhoneCallDemo extends Activity implements OnClickListener, OnLongCl
         intent.putExtra("outputX", 150);
         intent.putExtra("outputY", 150);
         intent.putExtra("return-data", true);
+
+        // 输出到本 app 的 FileProvider URI，作为裁剪结果的持久化落点
+        File outputFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        if (outputFile.exists()) {
+            outputFile.delete();
+        }
+        Uri uritempFile = FileProvider.getUriForFile(this, "com.example.phonecalldemo.fileprovider", outputFile);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+
+        // 让 FLAG_GRANT_WRITE_URI_PERMISSION 也覆盖到 EXTRA_OUTPUT 里的 FileProvider URI
+        intent.setClipData(ClipData.newRawUri(MediaStore.EXTRA_OUTPUT, uritempFile));
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        // 兜底：对每一个能响应 crop Intent 的目标包显式授予读写权限
+        List<ResolveInfo> resolvedList = getPackageManager()
+                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo info : resolvedList) {
+            grantUriPermission(info.activityInfo.packageName, uritempFile,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+
         startActivityForResult(intent, 3);
     }
 

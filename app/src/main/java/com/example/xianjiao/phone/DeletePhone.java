@@ -27,7 +27,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.DisplayMetrics;
 import android.Manifest;
+import android.content.ClipData;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -145,10 +147,10 @@ public class DeletePhone extends Activity implements OnClickListener{
                 intent.putExtra("changedHeadImage", changedHeadImage);
                 Log.d("deletephone:","jkll");
                 setResult(1001, intent);
+                finish();
                 break;
             default:;
         }
-        finish();
 
     }
     /**
@@ -234,6 +236,10 @@ public class DeletePhone extends Activity implements OnClickListener{
                  * 地方做判断处理类似情况
                  *
                  */
+                if (resultCode != RESULT_OK) {
+                    Toast.makeText(DeletePhone.this, "已取消或裁剪失败", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 if(data != null){
                     setPicToView(data);
                 }
@@ -269,9 +275,22 @@ public class DeletePhone extends Activity implements OnClickListener{
         
         // 使用FileProvider生成URI
         File outputFile = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        if (outputFile.exists()) {
+            outputFile.delete();
+        }
         Uri uritempFile = FileProvider.getUriForFile(this, "com.example.phonecalldemo.fileprovider", outputFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uritempFile);
-        
+
+        // 让 FLAG_GRANT_WRITE_URI_PERMISSION 也覆盖到 EXTRA_OUTPUT 里的 FileProvider URI
+        intent.setClipData(ClipData.newRawUri(MediaStore.EXTRA_OUTPUT, uritempFile));
+        // 兜底：对每一个能响应 crop Intent 的目标包显式授予读写权限
+        List<ResolveInfo> resolvedList = getPackageManager()
+                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo info : resolvedList) {
+            grantUriPermission(info.activityInfo.packageName, uritempFile,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
+
         startActivityForResult(intent, 3);
     }
     /**
